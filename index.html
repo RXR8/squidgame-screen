@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Squid Game Screen Controller</title>
+
+  <style>
+    @font-face {
+      font-family: 'SquidPrizeMoney2';
+      src: url('SquidPrizeMoney2.otf') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+    }
+
+    body {
+      background: white;
+      color: black;
+      font-family: 'SquidPrizeMoney2', monospace, monospace;
+      margin: 20px;
+      user-select: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    #screen {
+      position: relative;
+      width: 640px;
+      aspect-ratio: 16 / 9;
+      background: #121912;
+      padding: 15px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      letter-spacing: 0.12em;
+      background-image: repeating-linear-gradient(
+        to bottom,
+        rgba(30, 47, 30, 0.45),
+        rgba(30, 47, 30, 0.45) 1px,
+        transparent 2px,
+        transparent 3px
+      );
+      box-sizing: border-box;
+      transform-origin: top left;
+      transition: transform 0.3s ease;
+      gap: 20px;
+      overflow: hidden;
+    }
+
+    #screenInner {
+      width: 100%;
+      height: 100%;
+      transform-origin: center;
+      transform: scale(0.7);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      gap: 40px;
+    }
+
+    #fsButton {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: transparent;
+      border: 1px solid #addba5;
+      color: #addba5;
+      cursor: pointer;
+      font-size: 16px;
+      padding: 3px 7px;
+      border-radius: 6px;
+      transition: background-color 0.2s;
+      z-index: 100;
+      text-shadow: 0 0 4px #aaffaa;
+    }
+    #fsButton:hover {
+      background-color: #88b78f;
+      color: black;
+    }
+
+    .displayBlock {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      user-select: none;
+    }
+
+    .topTexts {
+      margin-bottom: 18px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: -10px;
+      width: 100%;
+    }
+
+    .koreanTopContainer {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      max-width: 420px;
+      margin-left: auto;
+      margin-right: auto;
+      position: relative;
+      min-height: 32px;
+    }
+
+    .koreanAsterisks {
+      font-family: sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: #dde3e3;
+      text-shadow: 0 0 6px #dde3e3;
+      user-select: none;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+
+    .koreanTop {
+      font-family: 'SquidPrizeMoney2', monospace, monospace;
+      font-size: 22px;
+      font-weight: 700;
+      color: #dde3e3;
+      text-shadow: 0 0 6px #dde3e3;
+      user-select: none;
+      letter-spacing: 0.38em;
+      margin: 0;
+      line-height: 1;
+      white-space: nowrap;
+      flex-shrink: 0;
+      min-width: 40px;
+    }
+
+    .englishSub {
+      font-size: 12px;
+      font-weight: 500;
+      margin-top: 3px;
+      margin-bottom: 0;
+      color: #558c7e;
+      text-shadow: 0 0 6px #558c7e;
+      user-select: none;
+      font-family: 'SquidPrizeMoney2', monospace, monospace;
+      letter-spacing: 0.26em;
+      width: auto;
+      max-width: 100%;
+      white-space: nowrap;
+      text-align: center;
+    }
+
+    .mainNumberRow {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      min-height: 85px;
+    }
+
+    .screenDisplayContainer {
+      position: relative;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .screenDisplay {
+      font-size: 50px;
+      font-weight: 900;
+      font-family: 'SquidPrizeMoney2', monospace, monospace;
+      letter-spacing: 0;
+      user-select: none;
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      min-width: 0;
+      flex-grow: 0;
+      color: #addba5;
+      text-shadow: 0 0 6px #aaffaa;
+      transform: translateX(3px);
+    }
+
+    .screenDisplay span.comma {
+      margin-left: -18px;
+      margin-right: -18px;
+    }
+
+    .screenDisplay span.comma::after {
+      content: none !important;
+    }
+
+    .wonSymbol {
+      font-size: 50px;
+      font-weight: 900;
+      color: #addba5;
+      text-shadow: 0 0 6px #aaffaa;
+      flex-shrink: 0;
+      margin-right: 6px;
+      user-select: none;
+    }
+
+    .wonSymbol::after {
+      content: none !important;
+    }
+
+    .screenDisplay span {
+      position: relative;
+      padding-bottom: 5px;
+      width: 44px;
+      text-align: center;
+      flex-shrink: 0;
+      padding-left: 4px;
+      color: inherit;
+      text-shadow: inherit;
+      border-bottom: none;
+    }
+
+    .screenDisplay span::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      border-radius: 0px;
+      background-color: #7ea77b;
+      filter: drop-shadow(0 0 0px #aaffaa) drop-shadow(0 0 3px #7ea77b);
+      pointer-events: none;
+    }
+
+    .koreanUnit {
+      font-size: 18px;
+      font-weight: 700;
+      user-select: none;
+      letter-spacing: 0.18em;
+      color: #addba5;
+      white-space: nowrap;
+      position: absolute;
+      top: 60%;
+      transform: translateY(-50%);
+      left: calc(100% + 14px);
+      text-shadow: 0 0 4px #aaffaa;
+    }
+
+    /* Controls styles unchanged */
+    .option-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+      color: black;
+      font-family: 'SquidPrizeMoney2', monospace, monospace;
+      letter-spacing: 0.1em;
+      width: 640px;
+      max-width: 90vw;
+    }
+
+    label {
+      margin-right: 6px;
+      user-select: none;
+      font-weight: 600;
+      color: black;
+    }
+
+    input[type="number"], input[type="text"] {
+      font-family: 'SquidPrizeMoney2', monospace, monospace;
+      font-size: 16px;
+      background: white;
+      color: black;
+      border: 2px solid #888;
+      border-radius: 4px;
+      padding: 4px 8px;
+      width: 80px;
+      text-align: right;
+      margin-right: 10px;
+      box-shadow: none;
+      user-select: text;
+      text-shadow: 0 0 4px #aaffaa;
+    }
+    #moneyCount {
+      width: 140px;
+    }
+
+    .circle-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 1.5px solid #444;
+      background-color: #eee;
+      color: black;
+      font-size: 18px;
+      margin-right: 10px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+      user-select: none;
+      box-shadow: none;
+      font-family: 'SquidPrizeMoney2', monospace, monospace;
+      text-shadow: 0 0 4px #aaffaa;
+    }
+
+    .circle-btn:hover {
+      background-color: #ccc;
+    }
+
+    button {
+      user-select: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="screen">
+    <div id="screenInner">
+      <button id="fsButton" onclick="toggleFullScreen()">⛶</button>
+
+      <!-- FIRST DISPLAY: Player Count -->
+      <div class="displayBlock">
+        <div class="topTexts">
+          <div class="koreanTopContainer">
+            <div class="koreanAsterisks">*</div>
+            <div class="koreanTop">참가인원</div>
+            <div class="koreanAsterisks">*</div>
+          </div>
+
+          <div class="englishSub">NUMBER OF PLAYERS</div>
+        </div>
+
+        <div class="mainNumberRow">
+          <div class="screenDisplayContainer">
+            <div class="screenDisplay" id="screenDisplayPlayer"></div>
+            <div class="koreanUnit">명</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- SECOND DISPLAY: Cash Prize -->
+      <div class="displayBlock">
+        <div class="topTexts">
+          <div class="koreanTopContainer">
+            <div class="koreanAsterisks">*</div>
+            <div class="koreanTop">총상금</div>
+            <div class="koreanAsterisks">*</div>
+          </div>
+
+          <div class="englishSub">CASH PRIZE</div>
+        </div>
+
+        <div class="mainNumberRow">
+          <div class="screenDisplayContainer">
+            <div class="screenDisplay" id="screenDisplayMoney">
+              <span class="wonSymbol">₩</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <br />
+
+  <div class="option-row">
+    <button class="circle-btn" onclick="setDisplayType('player')">P</button>
+    <label for="playerCount">Player Count:</label>
+    <input
+      type="number"
+      id="playerCount"
+      min="1"
+      max="456"
+      value="456"
+      oninput="updateDisplay()"
+    />
+    <button onclick="decrementPlayerCount(); updateDisplay();">▼</button>
+  </div>
+
+  <div class="option-row">
+    <button class="circle-btn" onclick="setDisplayType('money')">₩</button>
+    <label for="moneyCount">Money Count (₩):</label>
+    <input
+      type="text"
+      id="moneyCount"
+      value="0"
+      oninput="formatMoney(this); updateDisplay()"
+    />
+  </div>
+
+  <script>
+    let currentDisplay = "player";
+    const baseScale = 0.7;
+
+    function toggleFullScreen() {
+      const elem = document.getElementById("screen");
+      if (!document.fullscreenElement) {
+        elem.requestFullscreen().catch(err => {
+          alert(`Error attempting fullscreen: ${err.message}`);
+        });
+      } else {
+        document.exitFullscreen();
+      }
+    }
+
+    document.addEventListener("fullscreenchange", () => {
+      const fsButton = document.getElementById("fsButton");
+      const screen = document.getElementById("screen");
+      const screenInner = document.getElementById("screenInner");
+      fsButton.style.display = document.fullscreenElement ? "none" : "inline";
+
+      if (document.fullscreenElement) {
+        const vw = window.innerWidth;
+        const vh = window.innerHeight;
+        const designWidth = 640; // original design width without padding
+        const designHeight = 640 * 9 / 16; // original design height
+
+        // Calculate scale to fit within viewport
+        const scaleX = vw / designWidth;
+        const scaleY = vh / designHeight;
+        const scale = Math.min(scaleX, scaleY);
+
+        // Apply combined scale
+        screenInner.style.transform = `scale(${scale * baseScale})`;
+        screenInner.style.transformOrigin = "center";
+
+        // Adjust screen container for fullscreen
+        screen.style.width = "100vw";
+        screen.style.height = "100vh";
+        screen.style.padding = "0";
+        screen.style.display = "flex";
+        screen.style.justifyContent = "center";
+        screen.style.alignItems = "center";
+      } else {
+        // Reset styles when exiting fullscreen
+        screenInner.style.transform = `scale(${baseScale})`;
+        screenInner.style.transformOrigin = "center";
+
+        screen.style.width = "640px";
+        screen.style.aspectRatio = "16 / 9";
+        screen.style.padding = "15px 20px";
+        screen.style.display = "flex";
+        screen.style.justifyContent = "center";
+        screen.style.alignItems = "center";
+      }
+    });
+
+    function decrementPlayerCount() {
+      let input = document.getElementById("playerCount");
+      let val = parseInt(input.value);
+      if (val > 1) input.value = val - 1;
+    }
+
+    function formatMoney(input) {
+      let value = input.value.replace(/[^0-9]/g, "");
+      if (value === "") value = "0";
+      let num = parseInt(value);
+      if (num > 45600000000) num = 45600000000;
+      input.value = num.toLocaleString();
+    }
+
+    function setDisplayType(type) {
+      currentDisplay = type;
+      updateDisplay();
+    }
+
+    function updateDisplay() {
+      // PLAYER COUNT display
+      const playerCount = document.getElementById("playerCount").value;
+      const screenDisplayPlayer = document.getElementById("screenDisplayPlayer");
+      screenDisplayPlayer.innerHTML = "";
+      for (const ch of playerCount) {
+        let span = document.createElement("span");
+        span.textContent = ch;
+        screenDisplayPlayer.appendChild(span);
+      }
+
+      // MONEY display with commas in second block
+      const moneyInput = document.getElementById("moneyCount");
+      const moneyRaw = moneyInput.value.replace(/,/g, "");
+      let moneyNum = parseInt(moneyRaw);
+      if (isNaN(moneyNum)) moneyNum = 0;
+      if (moneyNum > 45600000000) moneyNum = 45600000000;
+      const formattedMoney = moneyNum.toLocaleString();
+
+      const screenDisplayMoney = document.getElementById("screenDisplayMoney");
+      screenDisplayMoney.innerHTML = '<span class="wonSymbol">₩</span>';
+      for (const ch of formattedMoney) {
+        let span = document.createElement("span");
+        span.textContent = ch;
+        if (ch === ",") {
+          span.classList.add("comma"); // Add special class to commas
+        }
+        screenDisplayMoney.appendChild(span);
+      }
+    }
+
+    // Initialize display on load
+    updateDisplay();
+  </script>
+</body>
+</html>
